@@ -19,7 +19,15 @@ if (!process.env.DATABASE_URL && !process.env.DATABASE_URI) {
   process.exit(0)
 }
 
-const env = { ...process.env, PAYLOAD_DB_PUSH: 'true', NODE_OPTIONS: '--no-deprecation --import=tsx/esm' }
+// Payload only pushes schema when NODE_ENV !== 'production', and Vercel builds
+// run with NODE_ENV=production. The seed subprocess alone runs as development
+// so the tables get created; `next build` that follows is untouched.
+const env = {
+  ...process.env,
+  NODE_ENV: 'development',
+  PAYLOAD_DB_PUSH: 'true',
+  NODE_OPTIONS: '--no-deprecation --import=tsx/esm',
+}
 const run = (label, file) => {
   console.log(`\n▶ seed-on-vercel: ${label}`)
   execSync(`npx tsx ${file}`, { stdio: 'inherit', env })
