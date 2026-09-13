@@ -75,6 +75,11 @@ export function SiteHeader({ locale }: { locale: Locale }) {
               {t.header.services}
             </Link>
           </li>
+          <li>
+            <Link href={p('/solutions')} className="block whitespace-nowrap px-3 py-2.5 font-semibold hover:bg-[var(--e-steel-50)]">
+              {t.solutions.title}
+            </Link>
+          </li>
         </ul>
       </nav>
     </header>

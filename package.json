@@ -16,9 +16,11 @@
     "seed:products": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" tsx src/seed/products.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prebuild": "node scripts/seed-on-vercel.mjs"
+    "prebuild": "node scripts/seed-on-vercel.mjs",
+    "translate:missing": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" tsx src/seed/translate.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.125.0",
     "@payloadcms/db-postgres": "^3.88.0",
     "@payloadcms/db-sqlite": "^3.88.0",
     "@payloadcms/next": "^3.88.0",

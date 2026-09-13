@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { autoTranslate, TRANSLATE_SPECS } from '@/hooks/autoTranslate'
 
 /**
  * The hybrid model lives here: `saleMode` decides whether the product page
@@ -9,6 +10,7 @@ export const Products: CollectionConfig = {
   slug: 'products',
   labels: { singular: 'منتج', plural: 'المنتجات' },
   access: { read: () => true },
+  hooks: { afterChange: [autoTranslate(TRANSLATE_SPECS.products)] },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'sku', 'category', 'price', 'stockStatus'],
@@ -25,7 +27,13 @@ export const Products: CollectionConfig = {
       label: 'الرابط',
       admin: { position: 'sidebar' },
     },
-    { name: 'sku', type: 'text', unique: true, label: 'كود المنتج', admin: { position: 'sidebar' } },
+    {
+      name: 'sku',
+      type: 'text',
+      unique: true,
+      label: 'كود المنتج',
+      admin: { position: 'sidebar' },
+    },
     {
       name: 'category',
       type: 'relationship',
@@ -34,7 +42,13 @@ export const Products: CollectionConfig = {
       label: 'القسم',
       admin: { position: 'sidebar' },
     },
-    { name: 'brand', type: 'relationship', relationTo: 'brands', label: 'الماركة', admin: { position: 'sidebar' } },
+    {
+      name: 'brand',
+      type: 'relationship',
+      relationTo: 'brands',
+      label: 'الماركة',
+      admin: { position: 'sidebar' },
+    },
 
     {
       type: 'tabs',
@@ -45,7 +59,12 @@ export const Products: CollectionConfig = {
             { name: 'shortDescription', type: 'textarea', localized: true, label: 'وصف مختصر' },
             { name: 'description', type: 'richText', localized: true, label: 'الوصف التفصيلي' },
             { name: 'gallery', type: 'upload', relationTo: 'media', hasMany: true, label: 'الصور' },
-            { name: 'datasheet', type: 'upload', relationTo: 'media', label: 'كتالوج / داتا شيت (PDF)' },
+            {
+              name: 'datasheet',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'كتالوج / داتا شيت (PDF)',
+            },
           ],
         },
         {

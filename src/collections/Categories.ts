@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { autoTranslate, TRANSLATE_SPECS } from '@/hooks/autoTranslate'
 
 /**
  * Nested category tree, seeded from catalog/taxonomy.json.
@@ -8,6 +9,7 @@ export const Categories: CollectionConfig = {
   slug: 'categories',
   labels: { singular: 'قسم', plural: 'الأقسام' },
   access: { read: () => true },
+  hooks: { afterChange: [autoTranslate(TRANSLATE_SPECS.categories)] },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'family', 'saleMode', 'slug'],

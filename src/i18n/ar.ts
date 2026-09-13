@@ -1,3 +1,5 @@
+import { solutionsAr } from './solutions.ar'
+
 /**
  * Arabic — the default and primary locale. Every key here defines the shape
  * of the dictionary; `en.ts` is typed against it so a missing translation is
@@ -234,6 +236,8 @@ export const ar = {
     categories: 'الأقسام',
     products: 'المنتجات',
   },
+
+  solutions: solutionsAr,
 
   quote: {
     title: 'اطلب عرض سعر',

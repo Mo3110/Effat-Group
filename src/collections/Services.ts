@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { autoTranslate, TRANSLATE_SPECS } from '@/hooks/autoTranslate'
 
 /**
  * Refill, annual inspection and maintenance contracts.
@@ -9,7 +10,14 @@ export const Services: CollectionConfig = {
   slug: 'services',
   labels: { singular: 'خدمة', plural: 'الخدمات' },
   access: { read: () => true },
-  admin: { useAsTitle: 'title', defaultColumns: ['title', 'model', 'recurringMonths'], group: 'الخدمات' },
+  hooks: {
+    afterChange: [autoTranslate(TRANSLATE_SPECS.services)],
+  },
+  admin: {
+    useAsTitle: 'title',
+    defaultColumns: ['title', 'model', 'recurringMonths'],
+    group: 'الخدمات',
+  },
   fields: [
     { name: 'title', type: 'text', required: true, localized: true, label: 'اسم الخدمة' },
     { name: 'slug', type: 'text', required: true, unique: true, index: true },

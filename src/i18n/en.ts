@@ -1,4 +1,5 @@
 import type { Dict } from './ar'
+import { solutionsEn } from './solutions.en'
 
 /**
  * English. Typed against the Arabic dictionary, so any key missing here fails
@@ -239,6 +240,8 @@ export const en: Dict = {
     categories: 'Categories',
     products: 'Products',
   },
+
+  solutions: solutionsEn,
 
   quote: {
     title: 'Request a quote',

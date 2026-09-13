@@ -26,8 +26,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: '/', destination: '/ar', permanent: true },
-      { source: '/:seg(services|quote|search)', destination: '/ar/:seg', permanent: true },
-      { source: '/:seg(c|p|services)/:rest*', destination: '/ar/:seg/:rest*', permanent: true },
+      { source: '/:seg(services|quote|search|solutions)', destination: '/ar/:seg', permanent: true },
+      { source: '/:seg(c|p|services|solutions)/:rest*', destination: '/ar/:seg/:rest*', permanent: true },
     ]
   },
   /**
