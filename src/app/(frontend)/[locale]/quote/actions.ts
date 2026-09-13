@@ -3,6 +3,7 @@
 import { headers } from 'next/headers'
 import { getClient } from '@/lib/payload'
 import { normalizeEgyptPhone } from '@/lib/phone'
+import { defaultLocale, getDict, isLocale } from '@/i18n'
 
 export type QuoteState = { ok: boolean; error?: string }
 
@@ -48,11 +49,15 @@ const clean = (v: FormDataEntryValue | null, max: number) =>
     .slice(0, max)
 
 export async function submitQuote(_prev: QuoteState, formData: FormData): Promise<QuoteState> {
+  // The form posts its locale so error strings come back in the right language.
+  const rawLocale = String(formData.get('locale') ?? '')
+  const errors = getDict(isLocale(rawLocale) ? rawLocale : defaultLocale).quote.errors
+
   const h = await headers()
   const ip = (h.get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown'
 
   if (rateLimited(ip)) {
-    return { ok: false, error: 'طلبات كتير في وقت قصير. استنى شوية وحاول تاني.' }
+    return { ok: false, error: errors.rateLimited }
   }
 
   const contactName = clean(formData.get('contactName'), LIMITS.contactName)
@@ -62,15 +67,15 @@ export async function submitQuote(_prev: QuoteState, formData: FormData): Promis
   const governorate = clean(formData.get('governorate'), LIMITS.governorate)
   const message = clean(formData.get('message'), LIMITS.message)
 
-  if (!contactName) return { ok: false, error: 'من فضلك اكتب اسمك.' }
+  if (!contactName) return { ok: false, error: errors.name }
 
   const phone = normalizeEgyptPhone(rawPhone)
-  if (!phone) return { ok: false, error: 'رقم الموبايل غير صحيح. مثال: 01012345678' }
+  if (!phone) return { ok: false, error: errors.phone }
 
   // Payload's email field rejects malformed values, but catching it here gives
   // the user an Arabic message instead of a generic failure.
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-    return { ok: false, error: 'البريد الإلكتروني غير صحيح.' }
+    return { ok: false, error: errors.email }
   }
 
   try {
@@ -93,6 +98,6 @@ export async function submitQuote(_prev: QuoteState, formData: FormData): Promis
     // Logged server-side only; the user gets a generic message so internal
     // details never reach the browser.
     console.error('quote submit failed', err)
-    return { ok: false, error: 'حصلت مشكلة أثناء الإرسال. جرّب تاني أو كلّمنا على واتساب.' }
+    return { ok: false, error: errors.generic }
   }
 }

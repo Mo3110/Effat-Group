@@ -6,24 +6,26 @@ import type { Category, Media, Product } from '@/payload-types'
 import { buildBreadcrumbs, FAMILY_COLOR, getClient } from '@/lib/payload'
 import { formatEGP, formatEGPWithUnit, priceExVat, waLink } from '@/lib/format'
 import { StockBadge } from '@/components/StockBadge'
+import { getDict, isLocale, localePath, type Locale } from '@/i18n'
 
-type Args = { params: Promise<{ slug: string }> }
+type Args = { params: Promise<{ locale: string; slug: string }> }
 
-async function getProduct(slug: string): Promise<Product | null> {
+async function getProduct(slug: string, locale: Locale): Promise<Product | null> {
   const payload = await getClient()
   const res = await payload.find({
     collection: 'products',
     where: { slug: { equals: slug } },
     limit: 1,
     depth: 2,
-    locale: 'ar',
+    locale,
   })
   return (res.docs[0] as Product) ?? null
 }
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
-  const { slug } = await params
-  const p = await getProduct(slug)
+  const { slug, locale } = await params
+  if (!isLocale(locale)) return {}
+  const p = await getProduct(slug, locale)
   if (!p) return {}
   return {
     title: p.metaTitle || p.title,
@@ -33,14 +35,17 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
 
 export default async function ProductPage({ params }: Args) {
-  const { slug } = await params
-  const product = await getProduct(slug)
+  const { slug, locale } = await params
+  if (!isLocale(locale)) notFound()
+  const t = getDict(locale)
+  const lp = (path: string) => localePath(locale, path)
+  const product = await getProduct(slug, locale)
   if (!product) notFound()
 
   const payload = await getClient()
   const category = (typeof product.category === 'object' ? product.category : null) as Category | null
 
-  const crumbs = category ? await buildBreadcrumbs(category) : []
+  const crumbs = category ? await buildBreadcrumbs(category, locale) : []
   const color = category ? (FAMILY_COLOR[category.family] ?? 'var(--e-primary)') : 'var(--e-primary)'
 
   // Resolve the effective sale mode: 'inherit' falls back to the category.
@@ -58,27 +63,26 @@ export default async function ProductPage({ params }: Args) {
         where: { category: { equals: category.id }, slug: { not_equals: product.slug } },
         limit: 4,
         depth: 2,
-        locale: 'ar',
+        locale,
       })
     : { docs: [] as Product[] }
 
   const priceStr = product.price ? formatEGP(product.price) : null
-  const vatExcl = product.price ? formatEGP(priceExVat(product.price)) : null
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       {/* Breadcrumb */}
-      <nav aria-label="مسار التصفح" className="text-sm text-[var(--e-text-muted)]">
+      <nav aria-label={t.common.breadcrumb} className="text-sm text-[var(--e-text-muted)]">
         <ol className="flex flex-wrap items-center gap-1.5">
           <li>
-            <Link href="/" className="hover:text-[var(--e-primary)]">
-              الرئيسية
+            <Link href={lp('/')} className="hover:text-[var(--e-primary)]">
+              {t.common.home}
             </Link>
           </li>
           {crumbs.map((c) => (
             <li key={c.slug} className="flex items-center gap-1.5">
               <span aria-hidden>/</span>
-              <Link href={`/c/${c.slug}`} className="hover:text-[var(--e-primary)]">
+              <Link href={lp(`/c/${c.slug}`)} className="hover:text-[var(--e-primary)]">
                 {c.title}
               </Link>
             </li>
@@ -104,7 +108,7 @@ export default async function ProductPage({ params }: Args) {
             />
           ) : (
             <div className="grid h-full place-items-center text-[var(--e-text-muted)]">
-              لا توجد صورة
+              {t.product.noImage}
             </div>
           )}
         </div>
@@ -117,10 +121,10 @@ export default async function ProductPage({ params }: Args) {
           <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
             {product.sku && (
               <span className="text-[var(--e-text-muted)]">
-                كود: <span className="num font-semibold">{product.sku}</span>
+                {t.product.sku}: <span className="num font-semibold">{product.sku}</span>
               </span>
             )}
-            <StockBadge status={product.stockStatus} withDot />
+            <StockBadge locale={locale} status={product.stockStatus} withDot />
           </div>
 
           {product.shortDescription && (
@@ -133,16 +137,16 @@ export default async function ProductPage({ params }: Args) {
           <div className="mt-6 rounded-[var(--e-radius-lg)] border border-[var(--e-border)] bg-white p-5">
             {mode === 'quote' || !priceStr ? (
               <>
-                <p className="text-lg font-extrabold">التسعير حسب المواصفات والكميات</p>
+                <p className="text-lg font-extrabold">{t.product.quoteTitle}</p>
                 <p className="mt-1 text-sm text-[var(--e-text-muted)]">
-                  ابعت لنا المواصفات أو المقايسة وهنرجع لك بعرض سعر خلال يوم عمل.
+                  {t.product.quoteBody}
                 </p>
               </>
             ) : (
               <>
                 <div className="flex items-end gap-3">
                   <span className="num text-3xl font-extrabold text-[var(--e-primary)]">
-                    {priceStr} ج.م
+                    {formatEGPWithUnit(product.price!, t.common.currency)}
                   </span>
                   {product.compareAtPrice && (
                     <span className="num text-lg text-[var(--e-text-muted)] line-through">
@@ -151,50 +155,48 @@ export default async function ProductPage({ params }: Args) {
                   )}
                 </div>
                 <p className="mt-1 text-xs text-[var(--e-text-muted)]">
-                  شامل ضريبة القيمة المضافة · قبل الضريبة{' '}
-                  <span className="num">{vatExcl}</span> ج.م
+                  {t.product.vatIncl} · {t.product.vatExcl}{' '}
+                  <span className="num">{formatEGPWithUnit(priceExVat(product.price!), t.common.currency)}</span>
                 </p>
               </>
             )}
 
             <div className="mt-4 flex flex-wrap gap-3">
               <Link
-                href={`/quote?product=${product.slug}`}
+                href={lp(`/quote?product=${product.slug}`)}
                 className="rounded-full px-6 py-3 font-bold text-white"
                 style={{ background: 'var(--e-primary)' }}
               >
-                {mode === 'quote' ? 'اطلب عرض سعر' : 'اطلب المنتج'}
+                {mode === 'quote' ? t.common.requestQuote : t.product.orderProduct}
               </Link>
               <a
-                href={waLink(
-                  `السلام عليكم، عايز أستفسر عن ${product.title}${product.sku ? ` (${product.sku})` : ''}`,
-                )}
+                href={waLink(t.product.waMessage(product.title, product.sku))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-full border-2 border-[var(--e-primary)] px-6 py-3 font-bold text-[var(--e-primary)] transition-colors hover:bg-[var(--e-primary)] hover:text-white"
               >
-                اسأل على واتساب
+                {t.common.askWhatsApp}
               </a>
             </div>
 
             {mode === 'hybrid' && (
               <p className="mt-3 text-xs text-[var(--e-text-muted)]">
-                للكميات الكبيرة والمشاريع بنعمل تسعير خاص — اطلب عرض سعر.
+                {t.product.hybridNote}
               </p>
             )}
           </div>
 
           {/* Trust row */}
           <ul className="mt-5 grid gap-2 text-sm text-[var(--e-text-muted)] sm:grid-cols-2">
-            <li>✔ الدفع عند الاستلام متاح</li>
-            <li>✔ توصيل لكل محافظات مصر</li>
-            <li>✔ توريد وتركيب وصيانة</li>
+            <li>✔ {t.product.trustCod}</li>
+            <li>✔ {t.product.trustDelivery}</li>
+            <li>✔ {t.product.trustInstall}</li>
             {product.warrantyMonths ? (
               <li>
-                ✔ ضمان <span className="num">{product.warrantyMonths}</span> شهر
+                ✔ <span className="num">{t.product.warranty(product.warrantyMonths)}</span>
               </li>
             ) : (
-              <li>✔ فاتورة ضريبية</li>
+              <li>✔ {t.product.invoice}</li>
             )}
           </ul>
 
@@ -216,7 +218,7 @@ export default async function ProductPage({ params }: Args) {
       {/* Specs */}
       {product.specs && product.specs.length > 0 && (
         <section className="mt-14">
-          <h2 className="text-xl font-extrabold">المواصفات</h2>
+          <h2 className="text-xl font-extrabold">{t.product.specs}</h2>
           <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[420px] border-collapse text-sm">
               <tbody>
@@ -234,15 +236,15 @@ export default async function ProductPage({ params }: Args) {
                 {product.refillDueMonths ? (
                   <tr className="border-b border-[var(--e-border)]">
                     <th scope="row" className="bg-[var(--e-steel-50)] p-3 text-start font-bold">
-                      إعادة التعبئة
+                      {t.product.refill}
                     </th>
                     <td className="p-3">
-                      كل <span className="num">{product.refillDueMonths}</span> شهر —{' '}
+                      <span className="num">{t.product.refillEvery(product.refillDueMonths)}</span> —{' '}
                       <Link
-                        href="/services/extinguisher-refill"
+                        href={lp('/services/extinguisher-refill')}
                         className="font-bold text-[var(--e-primary)]"
                       >
-                        احجز الصيانة
+                        {t.product.bookMaintenance}
                       </Link>
                     </td>
                   </tr>
@@ -256,14 +258,14 @@ export default async function ProductPage({ params }: Args) {
       {/* Related */}
       {related.docs.length > 0 && (
         <section className="mt-14">
-          <h2 className="text-xl font-extrabold">منتجات من نفس القسم</h2>
+          <h2 className="text-xl font-extrabold">{t.product.related}</h2>
           <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {(related.docs as Product[]).map((r) => {
               const img = r.gallery?.[0] as Media | undefined
               return (
                 <Link
                   key={r.id}
-                  href={`/p/${r.slug}`}
+                  href={lp(`/p/${r.slug}`)}
                   className="card-lift overflow-hidden rounded-[var(--e-radius-lg)] border border-[var(--e-border)] bg-white"
                 >
                   <span className="relative block aspect-4/3 bg-white">
@@ -280,7 +282,7 @@ export default async function ProductPage({ params }: Args) {
                   <span className="block p-3">
                     <span className="block text-sm font-bold leading-snug">{r.title}</span>
                     <span className="mt-1 block text-sm font-extrabold text-[var(--e-primary)]">
-                      {r.price ? formatEGPWithUnit(r.price) : 'بعرض سعر'}
+                      {r.price ? formatEGPWithUnit(r.price, t.common.currency) : t.common.byQuote}
                     </span>
                   </span>
                 </Link>

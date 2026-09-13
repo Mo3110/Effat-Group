@@ -105,6 +105,12 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* English pages: Latin face and a normal Latin line box */
+  html[lang='en'] body {
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.6;
+  }
+
   h1,
   h2,
   h3 {

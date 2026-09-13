@@ -12,8 +12,9 @@ export const priceExVat = (grossEgp: number) => Math.round(grossEgp / (1 + VAT_R
 /** `1,750` — Latin digits, matching the `.num` class used for prices and SKUs. */
 export const formatEGP = (n: number) => n.toLocaleString('en-EG')
 
-/** `1,750 ج.م` */
-export const formatEGPWithUnit = (n: number) => `${formatEGP(n)} ج.م`
+/** `1,750 ج.م` / `EGP 1,750` */
+export const formatEGPWithUnit = (n: number, unit = 'ج.م') =>
+  unit === 'ج.م' ? `${formatEGP(n)} ${unit}` : `${unit} ${formatEGP(n)}`
 
 /**
  * WhatsApp deep link with a prefilled Arabic message.

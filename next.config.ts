@@ -19,6 +19,18 @@ const nextConfig: NextConfig = {
     ],
   },
   /**
+   * Every public page lives under /ar or /en. The bare root and the legacy
+   * unprefixed catalogue paths (shared before localisation) land on Arabic.
+   * Permanent, so search engines consolidate on the prefixed URLs.
+   */
+  async redirects() {
+    return [
+      { source: '/', destination: '/ar', permanent: true },
+      { source: '/:seg(services|quote|search)', destination: '/ar/:seg', permanent: true },
+      { source: '/:seg(c|p|services)/:rest*', destination: '/ar/:seg/:rest*', permanent: true },
+    ]
+  },
+  /**
    * Baseline security headers.
    *
    * SAMEORIGIN rather than DENY: the Payload admin uses same-origin iframes

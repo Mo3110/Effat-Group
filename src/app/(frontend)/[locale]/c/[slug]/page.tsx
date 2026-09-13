@@ -7,52 +7,58 @@ import {
   buildBreadcrumbs,
   collectDescendantIds,
   FAMILY_COLOR,
-  SALE_MODE_LABEL,
+  saleModeKey,
   getClient,
 } from '@/lib/payload'
 import { formatEGPWithUnit, waLink } from '@/lib/format'
 import { StockBadge } from '@/components/StockBadge'
+import { getDict, isLocale, localePath, type Locale } from '@/i18n'
 
 type Args = {
-  params: Promise<{ slug: string }>
+  params: Promise<{ locale: string; slug: string }>
   searchParams: Promise<{ page?: string }>
 }
 
 /** Products per category page. */
 const PAGE_SIZE = 24
 
-async function getCategory(slug: string): Promise<Category | null> {
+async function getCategory(slug: string, locale: Locale): Promise<Category | null> {
   const payload = await getClient()
   const res = await payload.find({
     collection: 'categories',
     where: { slug: { equals: slug } },
     limit: 1,
     depth: 0,
-    locale: 'ar',
+    locale,
   })
   return (res.docs[0] as Category) ?? null
 }
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
-  const { slug } = await params
-  const category = await getCategory(slug)
+  const { slug, locale } = await params
+  if (!isLocale(locale)) return {}
+  const category = await getCategory(slug, locale)
   if (!category) return {}
+  const t = getDict(locale)
 
   const keywords = (category.seoKeywords ?? []) as string[]
   return {
     title: category.title,
     description:
       category.description ||
-      `${category.title} — توريد وتركيب وصيانة من Effat Group. ${keywords.slice(0, 3).join('، ')}`,
+      t.category.metaDescription(category.title, keywords.slice(0, 3).join(locale === 'ar' ? '، ' : ', ')),
     keywords,
   }
 }
 
 export default async function CategoryPage({ params, searchParams }: Args) {
-  const { slug } = await params
+  const { slug, locale } = await params
+  if (!isLocale(locale)) notFound()
+  const t = getDict(locale)
+  const lp = (path: string) => localePath(locale, path)
   const { page: pageParam } = await searchParams
   const page = Math.max(1, Number.parseInt(pageParam ?? '1', 10) || 1)
-  const category = await getCategory(slug)
+  const category = await getCategory(slug, locale)
   if (!category) notFound()
 
   const payload = await getClient()
@@ -67,7 +73,7 @@ export default async function CategoryPage({ params, searchParams }: Args) {
       limit: 100,
       sort: 'order',
       depth: 0,
-      locale: 'ar',
+      locale,
     }),
     payload.find({
       collection: 'products',
@@ -75,9 +81,9 @@ export default async function CategoryPage({ params, searchParams }: Args) {
       limit: PAGE_SIZE,
       page,
       depth: 2,
-      locale: 'ar',
+      locale,
     }),
-    buildBreadcrumbs(category),
+    buildBreadcrumbs(category, locale),
   ])
 
   const color = FAMILY_COLOR[category.family] ?? 'var(--e-primary)'
@@ -85,11 +91,11 @@ export default async function CategoryPage({ params, searchParams }: Args) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       {/* Breadcrumb */}
-      <nav aria-label="مسار التصفح" className="text-sm text-[var(--e-text-muted)]">
+      <nav aria-label={t.common.breadcrumb} className="text-sm text-[var(--e-text-muted)]">
         <ol className="flex flex-wrap items-center gap-1.5">
           <li>
-            <Link href="/" className="hover:text-[var(--e-primary)]">
-              الرئيسية
+            <Link href={lp('/')} className="hover:text-[var(--e-primary)]">
+              {t.common.home}
             </Link>
           </li>
           {crumbs.map((c, i) => (
@@ -98,7 +104,7 @@ export default async function CategoryPage({ params, searchParams }: Args) {
               {i === crumbs.length - 1 ? (
                 <span className="font-semibold text-[var(--e-text)]">{c.title}</span>
               ) : (
-                <Link href={`/c/${c.slug}`} className="hover:text-[var(--e-primary)]">
+                <Link href={lp(`/c/${c.slug}`)} className="hover:text-[var(--e-primary)]">
                   {c.title}
                 </Link>
               )}
@@ -120,19 +126,19 @@ export default async function CategoryPage({ params, searchParams }: Args) {
           className="mt-4 inline-block rounded-full px-3 py-1 text-xs font-bold"
           style={{ background: 'var(--e-steel-100)', color: 'var(--e-text-muted)' }}
         >
-          {SALE_MODE_LABEL[category.saleMode ?? 'quote']}
+          {t.saleMode[saleModeKey(category.saleMode)]}
         </span>
       </header>
 
       {/* Subcategories */}
       {children.docs.length > 0 && (
         <section className="mt-8">
-          <h2 className="text-lg font-bold">الأقسام الفرعية</h2>
+          <h2 className="text-lg font-bold">{t.category.subcategories}</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {(children.docs as Category[]).map((child) => (
               <Link
                 key={child.id}
-                href={`/c/${child.slug}`}
+                href={lp(`/c/${child.slug}`)}
                 className="card-lift flex items-center gap-3 rounded-[var(--e-radius)] border border-[var(--e-border)] bg-white p-4"
               >
                 <span
@@ -149,28 +155,28 @@ export default async function CategoryPage({ params, searchParams }: Args) {
 
       {/* Products */}
       <section className="mt-12">
-        <h2 className="text-lg font-bold">المنتجات</h2>
+        <h2 className="text-lg font-bold">{t.category.products}</h2>
 
         {products.docs.length === 0 ? (
           <div className="mt-4 rounded-[var(--e-radius-lg)] border border-dashed border-[var(--e-border-strong,var(--e-border))] bg-white p-10 text-center">
-            <p className="font-semibold">لسه مفيش منتجات مضافة في القسم ده.</p>
+            <p className="font-semibold">{t.category.emptyTitle}</p>
             <p className="mt-1 text-sm text-[var(--e-text-muted)]">
-              اطلب عرض سعر وهنرجع لك بالتوفر والأسعار خلال يوم عمل.
+              {t.category.emptyBody}
             </p>
             <div className="mt-5 flex flex-wrap justify-center gap-3">
               <Link
-                href={`/quote?category=${category.slug}`}
+                href={lp(`/quote?category=${category.slug}`)}
                 className="rounded-full bg-[var(--e-primary)] px-5 py-2.5 text-sm font-bold text-white"
               >
-                اطلب عرض سعر
+                {t.common.requestQuote}
               </Link>
               <a
-                href={waLink(`السلام عليكم، عايز أستفسر عن ${category.title}`)}
+                href={waLink(t.category.waMessage(category.title))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-full border-2 border-[var(--e-primary)] px-5 py-2.5 text-sm font-bold text-[var(--e-primary)]"
               >
-                اسأل على واتساب
+                {t.common.askWhatsApp}
               </a>
             </div>
           </div>
@@ -181,7 +187,7 @@ export default async function CategoryPage({ params, searchParams }: Args) {
               return (
               <Link
                 key={p.id}
-                href={`/p/${p.slug}`}
+                href={lp(`/p/${p.slug}`)}
                 className="card-lift overflow-hidden rounded-[var(--e-radius-lg)] border border-[var(--e-border)] bg-white"
               >
                 <span className="relative block aspect-4/3 bg-white">
@@ -206,12 +212,12 @@ export default async function CategoryPage({ params, searchParams }: Args) {
                 <div className="mt-3 flex items-center justify-between">
                   {p.price ? (
                     <span className="num font-extrabold text-[var(--e-primary)]">
-                      {formatEGPWithUnit(p.price)}
+                      {formatEGPWithUnit(p.price, t.common.currency)}
                     </span>
                   ) : (
-                    <span className="text-sm font-bold text-[var(--e-primary)]">بعرض سعر</span>
+                    <span className="text-sm font-bold text-[var(--e-primary)]">{t.common.byQuote}</span>
                   )}
-                  <StockBadge status={p.stockStatus} />
+                  <StockBadge locale={locale} status={p.stockStatus} />
                 </div>
                 </div>
               </Link>
@@ -223,27 +229,27 @@ export default async function CategoryPage({ params, searchParams }: Args) {
         {/* Pager — the list previously truncated at 24 with no way to see the rest */}
         {products.totalPages > 1 && (
           <nav
-            aria-label="تصفّح الصفحات"
+            aria-label={t.category.pagerLabel}
             className="mt-8 flex items-center justify-center gap-2"
           >
             {products.hasPrevPage && (
               <Link
-                href={`/c/${category.slug}?page=${page - 1}`}
+                href={lp(`/c/${category.slug}?page=${page - 1}`)}
                 className="rounded-full border border-[var(--e-border)] bg-white px-4 py-2 text-sm font-bold hover:border-[var(--e-primary)]"
               >
-                السابق
+                {t.category.prev}
               </Link>
             )}
             <span className="px-3 text-sm text-[var(--e-text-muted)]">
-              صفحة <span className="num">{page}</span> من{' '}
+              {t.category.page} <span className="num">{page}</span> {t.category.of}{' '}
               <span className="num">{products.totalPages}</span>
             </span>
             {products.hasNextPage && (
               <Link
-                href={`/c/${category.slug}?page=${page + 1}`}
+                href={lp(`/c/${category.slug}?page=${page + 1}`)}
                 className="rounded-full border border-[var(--e-border)] bg-white px-4 py-2 text-sm font-bold hover:border-[var(--e-primary)]"
               >
-                التالي
+                {t.category.next}
               </Link>
             )}
           </nav>

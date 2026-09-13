@@ -1,13 +1,17 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import type { Category } from '@/payload-types'
+import { defaultLocale, type Locale } from '@/i18n'
 
 export const getClient = () => getPayload({ config })
 
 export type Crumb = { title: string; slug: string }
 
 /** Walks `parent` up to the root so the page can render a breadcrumb. */
-export async function buildBreadcrumbs(category: Category): Promise<Crumb[]> {
+export async function buildBreadcrumbs(
+  category: Category,
+  locale: Locale = defaultLocale,
+): Promise<Crumb[]> {
   const payload = await getClient()
   const crumbs: Crumb[] = [{ title: category.title, slug: category.slug }]
 
@@ -19,7 +23,7 @@ export async function buildBreadcrumbs(category: Category): Promise<Crumb[]> {
       collection: 'categories',
       id: parentId,
       depth: 0,
-      locale: 'ar',
+      locale,
     })) as Category | null
     if (!parent) break
     crumbs.unshift({ title: parent.title, slug: parent.slug })
@@ -66,8 +70,8 @@ export const FAMILY_COLOR: Record<string, string> = {
   ppe: 'var(--e-cat-ppe)',
 }
 
-export const SALE_MODE_LABEL: Record<string, string> = {
-  cart: 'أسعار معلنة',
-  quote: 'بعرض سعر',
-  hybrid: 'أسعار معلنة + عرض سعر للكميات',
-}
+export type SaleMode = 'cart' | 'quote' | 'hybrid'
+
+/** Narrow a stored sale mode to a known key so dictionary lookups are typed. */
+export const saleModeKey = (mode?: string | null): SaleMode =>
+  mode === 'cart' || mode === 'hybrid' ? mode : 'quote'

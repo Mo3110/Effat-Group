@@ -5,26 +5,32 @@
  * colours — the category page used design tokens, the product page used raw
  * hex — so the same status rendered differently on the two pages.
  */
-const STOCK = {
-  in_stock: { label: 'متوفر', color: 'var(--e-success)' },
-  low: { label: 'كمية محدودة', color: 'var(--e-warning)' },
-  on_order: { label: 'حسب الطلب', color: 'var(--e-text-muted)' },
-  out: { label: 'غير متوفر', color: 'var(--e-error)' },
+import { getDict, type Locale } from '@/i18n'
+
+const STOCK_COLOR = {
+  in_stock: 'var(--e-success)',
+  low: 'var(--e-warning)',
+  on_order: 'var(--e-text-muted)',
+  out: 'var(--e-error)',
 } as const
 
-export type StockStatus = keyof typeof STOCK
+export type StockStatus = keyof typeof STOCK_COLOR
 
-export const stockInfo = (status?: string | null) =>
-  STOCK[(status ?? 'in_stock') as StockStatus] ?? STOCK.in_stock
+export const stockInfo = (locale: Locale, status?: string | null) => {
+  const key = ((status ?? 'in_stock') in STOCK_COLOR ? status ?? 'in_stock' : 'in_stock') as StockStatus
+  return { label: getDict(locale).stock[key], color: STOCK_COLOR[key] }
+}
 
 export function StockBadge({
+  locale,
   status,
   withDot = false,
 }: {
+  locale: Locale
   status?: string | null
   withDot?: boolean
 }) {
-  const s = stockInfo(status)
+  const s = stockInfo(locale, status)
   return (
     <span className="text-xs font-bold" style={{ color: s.color }}>
       {withDot ? '● ' : ''}

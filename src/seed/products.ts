@@ -35,6 +35,8 @@ type SeedProduct = {
   warrantyMonths?: number
   refillDueMonths?: number
   specs: Spec[]
+  /** English copy, written to the `en` locale after the Arabic pass. */
+  en: { title: string; shortDescription: string; specs: Spec[] }
 }
 
 const PRODUCTS: SeedProduct[] = [
@@ -61,6 +63,19 @@ const PRODUCTS: SeedProduct[] = [
       { key: 'زمن التفريغ', value: '13 ثانية تقريباً' },
       { key: 'التركيب', value: 'حائط (حامل مرفق)' },
     ],
+    en: {
+      title: '6 kg Dry Powder Fire Extinguisher',
+      shortDescription:
+        'ABC dry-powder extinguisher for class A, B and C fires — the standard unit for offices, shops, warehouses and vehicles. Supplied with wall bracket and a Civil Defense inspection tag.',
+      specs: [
+        { key: 'Agent', value: 'ABC dry powder 40%' },
+        { key: 'Capacity', value: '6 kg' },
+        { key: 'Fire classes', value: 'A · B · C' },
+        { key: 'Working pressure', value: '15 bar' },
+        { key: 'Discharge time', value: 'approx. 13 s' },
+        { key: 'Mounting', value: 'Wall (bracket included)' },
+      ],
+    },
   },
   {
     slug: 'extinguisher-co2-5kg',
@@ -83,6 +98,18 @@ const PRODUCTS: SeedProduct[] = [
       { key: 'الأسطوانة', value: 'صلب بدون لحام' },
       { key: 'القرن', value: 'بلاستيك عازل مانع للتجمد' },
     ],
+    en: {
+      title: '5 kg CO₂ Fire Extinguisher',
+      shortDescription:
+        'Carbon-dioxide extinguisher for electrical and flammable-liquid fires. Leaves no residue, so it is the right choice for server rooms, panels and kitchens.',
+      specs: [
+        { key: 'Agent', value: 'Carbon dioxide CO₂' },
+        { key: 'Capacity', value: '5 kg' },
+        { key: 'Fire classes', value: 'B · Electrical' },
+        { key: 'Cylinder', value: 'Seamless steel' },
+        { key: 'Horn', value: 'Insulated, frost-free plastic' },
+      ],
+    },
   },
   {
     slug: 'hose-reel-25m',
@@ -104,6 +131,18 @@ const PRODUCTS: SeedProduct[] = [
       { key: 'القاذف', value: '3 أوضاع (رذاذ / مستقيم / غلق)' },
       { key: 'ضغط التشغيل', value: '12 بار' },
     ],
+    en: {
+      title: '25 m Fire Hose Reel',
+      shortDescription:
+        'Swinging fire hose reel with a 25 m semi-rigid hose and three-position nozzle. Fits fire cabinets or mounts directly to the wall.',
+      specs: [
+        { key: 'Hose length', value: '25 m' },
+        { key: 'Hose diameter', value: '¾ in' },
+        { key: 'Inlet', value: '½ in' },
+        { key: 'Nozzle', value: '3-position (spray / jet / shut-off)' },
+        { key: 'Working pressure', value: '12 bar' },
+      ],
+    },
   },
   {
     slug: 'fire-cabinet-single',
@@ -124,6 +163,17 @@ const PRODUCTS: SeedProduct[] = [
       { key: 'الباب', value: 'زجاج سيكوريت مع قفل' },
       { key: 'التركيب', value: 'غاطس أو بارز' },
     ],
+    en: {
+      title: 'Single-Door Fire Cabinet',
+      shortDescription:
+        'Powder-coated steel fire cabinet with a tempered-glass door and lock. Houses a hose reel, extinguisher and landing valve in one recessed or surface-mounted unit.',
+      specs: [
+        { key: 'Material', value: '1.2 mm steel sheet' },
+        { key: 'Finish', value: 'Red electrostatic powder coat' },
+        { key: 'Door', value: 'Tempered glass with lock' },
+        { key: 'Mounting', value: 'Recessed or surface' },
+      ],
+    },
   },
   {
     slug: 'pillar-hydrant',
@@ -142,6 +192,17 @@ const PRODUCTS: SeedProduct[] = [
       { key: 'المدخل', value: '4 بوصة فلانشة' },
       { key: 'ضغط التشغيل', value: '16 بار' },
     ],
+    en: {
+      title: 'Pillar Hydrant',
+      shortDescription:
+        'Cast-iron outdoor pillar hydrant with two 2½ in outlets for fire-brigade connection. Supplied with caps and chains, tested to 16 bar.',
+      specs: [
+        { key: 'Material', value: 'Cast iron' },
+        { key: 'Outlets', value: '2 × 2½ in' },
+        { key: 'Inlet', value: '4 in flanged' },
+        { key: 'Working pressure', value: '16 bar' },
+      ],
+    },
   },
   {
     slug: 'fire-hose-15',
@@ -161,6 +222,18 @@ const PRODUCTS: SeedProduct[] = [
       { key: 'ضغط الانفجار', value: '40 بار' },
       { key: 'الكوبلن', value: 'ألومنيوم مطروق' },
     ],
+    en: {
+      title: '1.5 in × 30 m Fire Hose',
+      shortDescription:
+        'Rubber-lined fire hose with metal couplings on both ends, ready to connect.',
+      specs: [
+        { key: 'Diameter', value: '1.5 in' },
+        { key: 'Length', value: '30 m' },
+        { key: 'Lining', value: 'EPDM rubber' },
+        { key: 'Burst pressure', value: '40 bar' },
+        { key: 'Couplings', value: 'Forged aluminium' },
+      ],
+    },
   },
   {
     slug: 'couplings-set',
@@ -177,6 +250,16 @@ const PRODUCTS: SeedProduct[] = [
       { key: 'الخامة', value: 'نحاس / ألومنيوم مطروق' },
       { key: 'النوع', value: 'سريع الفك والتركيب' },
     ],
+    en: {
+      title: 'Brass Fire Hose Couplings & Adaptors',
+      shortDescription:
+        'Quick-release instantaneous couplings and adaptors in brass and forged aluminium, matching Egyptian fire-brigade standards.',
+      specs: [
+        { key: 'Sizes', value: '1½ · 2 · 2½ in' },
+        { key: 'Material', value: 'Brass / forged aluminium' },
+        { key: 'Type', value: 'Quick-release' },
+      ],
+    },
   },
   {
     slug: 'addressable-alarm-panel',
@@ -197,6 +280,18 @@ const PRODUCTS: SeedProduct[] = [
       { key: 'التغذية', value: '220 فولت + بطاريات 24 فولت' },
       { key: 'المخارج', value: 'ريليهات قابلة للبرمجة' },
     ],
+    en: {
+      title: '2-Loop Addressable Fire Alarm Panel',
+      shortDescription:
+        'Addressable fire alarm control panel with two loops and up to 500 devices. Arabic/English LCD, programmable relays, and battery back-up. Supplied, programmed and commissioned by our engineers.',
+      specs: [
+        { key: 'Loops', value: '2' },
+        { key: 'Capacity', value: '250 addresses per loop' },
+        { key: 'Display', value: 'LCD Arabic / English' },
+        { key: 'Power', value: '220 V + 24 V batteries' },
+        { key: 'Outputs', value: 'Programmable relays' },
+      ],
+    },
   },
   {
     slug: 'safety-boots-steel-toe',
@@ -218,6 +313,17 @@ const PRODUCTS: SeedProduct[] = [
       { key: 'الوجه', value: 'جلد طبيعي' },
       { key: 'المقاسات', value: '39 – 46' },
     ],
+    en: {
+      title: 'Steel-Toe Safety Boots',
+      shortDescription:
+        'Full-grain leather safety boot with a 200 J steel toe cap and anti-slip dual-density PU sole. Sizes 39–46, always in stock.',
+      specs: [
+        { key: 'Toe cap', value: 'Steel, 200 J' },
+        { key: 'Sole', value: 'Dual-density anti-slip PU' },
+        { key: 'Upper', value: 'Full-grain leather' },
+        { key: 'Sizes', value: '39 – 46' },
+      ],
+    },
   },
   {
     slug: 'safety-helmet',
@@ -236,6 +342,16 @@ const PRODUCTS: SeedProduct[] = [
       { key: 'سير الرأس', value: '6 نقاط قابل للضبط' },
       { key: 'الألوان', value: 'أصفر · أبيض · أحمر · أزرق · أخضر' },
     ],
+    en: {
+      title: 'Industrial Safety Helmet',
+      shortDescription:
+        'HDPE safety helmet with a six-point adjustable harness, in five colours for site colour-coding.',
+      specs: [
+        { key: 'Material', value: 'HDPE' },
+        { key: 'Harness', value: '6-point adjustable' },
+        { key: 'Colours', value: 'Yellow · White · Red · Blue · Green' },
+      ],
+    },
   },
   {
     slug: 'work-coverall',
@@ -255,6 +371,17 @@ const PRODUCTS: SeedProduct[] = [
       { key: 'المقاسات', value: 'S · M · L · XL · XXL' },
       { key: 'الألوان', value: 'كحلي · أزرق · رمادي' },
     ],
+    en: {
+      title: 'Work Coverall with Reflective Tape',
+      shortDescription:
+        'Poly-cotton work coverall with reflective tape on chest, sleeves and legs. Sizes S–XXL, custom logo printing available for volume orders.',
+      specs: [
+        { key: 'Fabric', value: '65/35 polyester-cotton' },
+        { key: 'Tape', value: 'Reflective on chest, sleeves and legs' },
+        { key: 'Sizes', value: 'S · M · L · XL · XXL' },
+        { key: 'Colours', value: 'Navy · Blue · Grey' },
+      ],
+    },
   },
   {
     slug: 'safety-gloves-leather',
@@ -271,6 +398,16 @@ const PRODUCTS: SeedProduct[] = [
       { key: 'الطول', value: '35 سم' },
       { key: 'الاستخدام', value: 'لحام · ورش · أعمال ثقيلة' },
     ],
+    en: {
+      title: 'Leather Welding & Heavy-Duty Gloves',
+      shortDescription:
+        'Full-grain leather glove with a lined, heat-resistant palm for welding and workshop use.',
+      specs: [
+        { key: 'Material', value: 'Full-grain leather' },
+        { key: 'Length', value: '35 cm' },
+        { key: 'Use', value: 'Welding · Workshops · Heavy duty' },
+      ],
+    },
   },
 ]
 
@@ -348,13 +485,30 @@ async function main() {
       limit: 1,
     })
 
+    let id: number | string
     if (existing.docs.length) {
-      await payload.update({ collection: 'products', id: existing.docs[0].id, data, locale: 'ar' })
+      id = existing.docs[0].id
+      await payload.update({ collection: 'products', id, data, locale: 'ar' })
       updated++
     } else {
-      await payload.create({ collection: 'products', data, locale: 'ar' })
+      id = (await payload.create({ collection: 'products', data, locale: 'ar' })).id
       created++
     }
+
+    // Second pass writes only the localized fields to `en`; everything else
+    // (price, stock, gallery…) is shared and was set above.
+    await payload.update({
+      collection: 'products',
+      id,
+      locale: 'en',
+      data: {
+        title: p.en.title,
+        shortDescription: p.en.shortDescription,
+        specs: p.en.specs,
+        metaTitle: p.en.title,
+        metaDescription: p.en.shortDescription,
+      },
+    })
   }
 
   payload.logger.info(`✅ products: ${created} created, ${updated} updated, ${skipped} skipped`)

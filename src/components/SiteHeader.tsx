@@ -1,26 +1,32 @@
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { FAMILIES } from '@/lib/families'
+import { getDict, localePath, type Locale } from '@/i18n'
+import { LocaleSwitch } from './LocaleSwitch'
 
-export function SiteHeader() {
+export function SiteHeader({ locale }: { locale: Locale }) {
+  const t = getDict(locale)
+  const p = (path: string) => localePath(locale, path)
+
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--e-border)] bg-white/95 backdrop-blur">
       {/* Utility strip — phone first, because most enquiries are calls */}
       <div className="bg-[var(--e-blue-900)] text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-1.5 text-[13px]">
-          <span className="hidden sm:inline">مصر الجديدة، القاهرة · توريد وتركيب وصيانة</span>
+          <span className="hidden sm:inline">{t.header.tagline}</span>
           <div className="flex items-center gap-4">
             <a href="tel:+201060094777" className="num font-semibold hover:text-[var(--e-orange-400)]">
               +20 106 009 4777
             </a>
-            <Link href="/en" className="opacity-80 hover:opacity-100">
-              EN
-            </Link>
+            <Suspense fallback={null}>
+              <LocaleSwitch locale={locale} label={t.common.switchTo} />
+            </Suspense>
           </div>
         </div>
       </div>
 
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
-        <Link href="/" className="flex shrink-0 items-center gap-2.5">
+        <Link href={p('/')} className="flex shrink-0 items-center gap-2.5">
           <ShieldMark />
           <span
             dir="ltr"
@@ -30,20 +36,20 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <form action="/search" className="ms-auto hidden max-w-md flex-1 md:block">
+        <form action={p('/search')} className="ms-auto hidden max-w-md flex-1 md:block">
           <input
             name="q"
             type="search"
-            placeholder="ابحث عن طفاية، كاشف، كاميرا، حذاء أمان…"
+            placeholder={t.header.searchPlaceholder}
             className="w-full rounded-full border border-[var(--e-border)] bg-[var(--e-steel-50)] px-4 py-2 text-sm outline-none focus:border-[var(--e-primary)]"
           />
         </form>
 
         <Link
-          href="/services/extinguisher-refill"
+          href={p('/services/extinguisher-refill')}
           className="ms-auto rounded-full bg-[var(--e-urgent)] px-4 py-2 text-sm font-bold text-white md:ms-0"
         >
-          صيانة عاجلة
+          {t.header.urgent}
         </Link>
       </div>
 
@@ -52,7 +58,7 @@ export function SiteHeader() {
           {FAMILIES.map((f) => (
             <li key={f.key}>
               <Link
-                href={`/c/${f.key}`}
+                href={p(`/c/${f.key}`)}
                 className="flex items-center gap-2 whitespace-nowrap px-3 py-2.5 font-semibold hover:bg-[var(--e-steel-50)]"
               >
                 <span
@@ -60,13 +66,13 @@ export function SiteHeader() {
                   className="size-2 rounded-full"
                   style={{ background: f.color }}
                 />
-                {f.titleAr}
+                {t.families[f.key].title}
               </Link>
             </li>
           ))}
           <li>
-            <Link href="/services" className="block whitespace-nowrap px-3 py-2.5 font-semibold hover:bg-[var(--e-steel-50)]">
-              الخدمات
+            <Link href={p('/services')} className="block whitespace-nowrap px-3 py-2.5 font-semibold hover:bg-[var(--e-steel-50)]">
+              {t.header.services}
             </Link>
           </li>
         </ul>

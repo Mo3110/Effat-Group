@@ -4,6 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { STORY, ACT_DURATION } from '@/lib/story'
+import type { Dict, Locale } from '@/i18n'
+import { localePath } from '@/i18n'
 
 /**
  * Four-act photo hero, contained split layout.
@@ -17,7 +19,7 @@ import { STORY, ACT_DURATION } from '@/lib/story'
  * All four images stay mounted and cross-fade, so there is no flash between
  * acts and no re-decode. The first is `priority` (the LCP element).
  */
-export function HeroStory() {
+export function HeroStory({ locale, t }: { locale: Locale; t: Dict['hero'] & { quote: string } }) {
   const [act, setAct] = useState(0)
   const [paused, setPaused] = useState(false)
   const reduced = useRef(false)
@@ -40,6 +42,7 @@ export function HeroStory() {
   }, [paused, act])
 
   const current = STORY[act]
+  const copy = t.acts[current.key]
 
   return (
     <section
@@ -57,38 +60,38 @@ export function HeroStory() {
               className="inline-block rounded-full px-3 py-1 text-xs font-bold text-white"
               style={{ background: current.color }}
             >
-              {current.eyebrow}
+              {copy.eyebrow}
             </span>
 
             <h1 className="mt-4 text-3xl font-extrabold leading-tight sm:text-4xl lg:text-[2.75rem]">
-              {current.title}
+              {copy.title}
             </h1>
 
             <p
               className="mt-4 max-w-lg leading-relaxed text-[var(--e-text-muted)]"
               aria-live="polite"
             >
-              {current.body}
+              {copy.body}
             </p>
           </div>
 
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
-              href={current.href}
+              href={localePath(locale, current.href)}
               className="rounded-full bg-[var(--e-primary)] px-6 py-3 font-bold text-white shadow-[var(--e-shadow)]"
             >
-              {current.ctaLabel}
+              {copy.ctaLabel}
             </Link>
             <Link
-              href="/quote"
+              href={localePath(locale, '/quote')}
               className="rounded-full border-2 border-[var(--e-primary)] px-6 py-3 font-bold text-[var(--e-primary)] transition-colors hover:bg-[var(--e-primary)] hover:text-white"
             >
-              اطلب عرض سعر
+              {t.quote}
             </Link>
           </div>
 
           <p className="mt-5 text-sm text-[var(--e-text-muted)]">
-            توريد وتركيب وصيانة · اعتماد الدفاع المدني · الدفع عند الاستلام متاح
+            {t.trustLine}
           </p>
         </div>
 
@@ -106,7 +109,7 @@ export function HeroStory() {
               <Image
                 key={s.key}
                 src={s.image}
-                alt={i === act ? s.alt : ''}
+                alt={i === act ? t.acts[s.key].alt : ''}
                 aria-hidden={i !== act}
                 fill
                 priority={i === 0}
@@ -124,7 +127,7 @@ export function HeroStory() {
           </div>
 
           {/* Thumbnail strip — act switcher and category nav in one control */}
-          <nav aria-label="أقسام" className="mt-3">
+          <nav aria-label={t.navLabel} className="mt-3">
             <ul className="grid grid-cols-4 gap-2">
               {STORY.map((s, i) => (
                 <li key={s.key}>
@@ -157,7 +160,7 @@ export function HeroStory() {
                         color: i === act ? '#fff' : 'var(--e-text-muted)',
                       }}
                     >
-                      {s.chip}
+                      {t.acts[s.key].chip}
                     </span>
                   </button>
                 </li>
