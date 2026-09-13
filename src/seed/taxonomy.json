@@ -1,0 +1,384 @@
+{
+  "$comment": "Effat Co. — master catalog taxonomy. Drives DB seed, URL slugs, faceted filters and JSON-LD. sale_mode: 'cart' = public price + checkout, 'quote' = spec page + RFQ button, 'hybrid' = price shown, quote for qty>threshold.",
+  "version": "0.1.0",
+  "currency": "EGP",
+  "locales": ["ar", "en"],
+  "default_locale": "ar",
+
+  "attribute_library": {
+    "brand":            { "type": "enum", "facet": true },
+    "origin":           { "type": "enum", "facet": true, "values": ["مصري", "إيطالي", "ألماني", "صيني", "إسباني", "تركي"] },
+    "cert":             { "type": "multi_enum", "facet": true, "values": ["الدفاع المدني", "EN3", "UL", "FM", "ISO 9001", "علامة الجودة المصرية", "CE", "NFPA"] },
+    "capacity_kg":      { "type": "number", "unit": "kg", "facet": true },
+    "capacity_l":       { "type": "number", "unit": "L", "facet": true },
+    "agent_type":       { "type": "enum", "facet": true, "values": ["بودرة جافة", "ثاني أكسيد الكربون", "فوم", "ماء", "كيماوي رطب", "هالوترون", "FM200", "NOVEC 1230", "أيروسول"] },
+    "fire_class":       { "type": "multi_enum", "facet": true, "values": ["A", "B", "C", "D", "F/K", "Electrical"] },
+    "mounting":         { "type": "enum", "values": ["حائط", "أرضي", "عربة متحركة", "أوتوماتيك سقفي"] },
+    "warranty_months":  { "type": "number" },
+    "loop_type":        { "type": "enum", "facet": true, "values": ["تقليدي", "معنون", "لاسلكي"] },
+    "zones":            { "type": "number", "facet": true },
+    "resolution_mp":    { "type": "number", "unit": "MP", "facet": true },
+    "camera_form":      { "type": "enum", "facet": true, "values": ["Dome", "Bullet", "PTZ", "Turret", "Fisheye", "Cube"] },
+    "signal_type":      { "type": "enum", "facet": true, "values": ["IP/PoE", "HD-TVI", "AHD", "Analog"] },
+    "ip_rating":        { "type": "enum", "facet": true, "values": ["IP54", "IP65", "IP66", "IP67", "IK10"] },
+    "channels":         { "type": "number", "facet": true },
+    "storage_tb":       { "type": "number", "unit": "TB" },
+    "flow_gpm":         { "type": "number", "unit": "GPM", "facet": true },
+    "head_m":           { "type": "number", "unit": "m" },
+    "power_hp":         { "type": "number", "unit": "HP" },
+    "diameter_inch":    { "type": "number", "unit": "\"", "facet": true },
+    "size_apparel":     { "type": "enum", "facet": true, "values": ["S","M","L","XL","XXL"] },
+    "shoe_size_eu":     { "type": "number", "facet": true },
+    "color":            { "type": "enum", "facet": true },
+    "material":         { "type": "enum", "facet": true },
+    "refill_due_months":{ "type": "number", "$comment": "drives the maintenance-reminder engine" }
+  },
+
+  "categories": [
+    {
+      "slug": "fire-fighting",
+      "ar": "مكافحة الحريق",
+      "en": "Fire Fighting",
+      "icon": "flame",
+      "children": [
+        {
+          "slug": "fire-extinguishers", "ar": "طفايات الحريق", "en": "Fire Extinguishers",
+          "sale_mode": "cart", "hero": true,
+          "attributes": ["brand","origin","cert","agent_type","capacity_kg","fire_class","mounting","warranty_months","refill_due_months"],
+          "seo_ar": ["سعر طفاية حريق 6 كيلو بودرة","طفاية حريق ثاني اكسيد الكربون","طفاية حريق للمطبخ","طفاية حريق للسيارة"],
+          "children": [
+            { "slug": "dry-powder", "ar": "بودرة جافة", "en": "Dry Powder", "variants_kg": [1,2,3,4,6,9,12,25,50] },
+            { "slug": "co2", "ar": "ثاني أكسيد الكربون", "en": "CO2", "variants_kg": [2,3,5,6,10,20,45] },
+            { "slug": "foam", "ar": "فوم", "en": "Foam", "variants_l": [6,9,50] },
+            { "slug": "water", "ar": "ماء", "en": "Water", "variants_l": [6,9] },
+            { "slug": "wet-chemical", "ar": "كيماوي رطب (مطاعم)", "en": "Wet Chemical / Kitchen", "variants_l": [6,9] },
+            { "slug": "clean-agent", "ar": "غاز نظيف (هالوترون / FM200)", "en": "Clean Agent" },
+            { "slug": "automatic-ball", "ar": "طفاية أوتوماتيك / كرة الإطفاء", "en": "Automatic / Fire Ball" },
+            { "slug": "trolley", "ar": "طفايات عربة متحركة", "en": "Trolley Units", "variants_kg": [25,50,100] },
+            { "slug": "vehicle", "ar": "طفايات السيارات", "en": "Vehicle Extinguishers" }
+          ]
+        },
+        {
+          "slug": "extinguisher-accessories", "ar": "ملحقات الطفايات", "en": "Extinguisher Accessories",
+          "sale_mode": "cart",
+          "children": [
+            { "slug": "brackets", "ar": "حوامل وكوابيل", "en": "Brackets & Stands" },
+            { "slug": "covers", "ar": "أغطية واقية", "en": "Protective Covers" },
+            { "slug": "hoses-horns", "ar": "خراطيم وقرون", "en": "Hoses & Horns" },
+            { "slug": "gauges-valves", "ar": "مانومتر ومحابس", "en": "Gauges & Valves" },
+            { "slug": "powder-refill", "ar": "مسحوق إعادة تعبئة", "en": "Refill Powder / Agent" }
+          ]
+        },
+        {
+          "slug": "hose-reels-cabinets", "ar": "بكرات وصناديق الحريق", "en": "Hose Reels & Cabinets",
+          "sale_mode": "hybrid",
+          "attributes": ["brand","origin","cert","diameter_inch","material","color"],
+          "children": [
+            { "slug": "hose-reel", "ar": "بكرة خرطوم", "en": "Hose Reel" },
+            { "slug": "fire-cabinet", "ar": "صندوق حريق", "en": "Fire Cabinet", "$note": "single / double door, recessed / surface" },
+            { "slug": "fire-hose", "ar": "خراطيم حريق", "en": "Fire Hose", "$note": "canvas, rubber-lined, 1.5\" / 2.5\"" },
+            { "slug": "nozzles", "ar": "قواذف ونوزل", "en": "Nozzles & Branch Pipes" },
+            { "slug": "couplings", "ar": "وصلات وكوبلن", "en": "Couplings & Adapters" }
+          ]
+        },
+        {
+          "slug": "hydrants-valves", "ar": "حنفيات ومحابس الحريق", "en": "Hydrants & Valves",
+          "sale_mode": "quote",
+          "children": [
+            { "slug": "pillar-hydrant", "ar": "حنفية حريق خارجية", "en": "Pillar Hydrant" },
+            { "slug": "landing-valve", "ar": "محبس أرضي / لاندنج فالف", "en": "Landing Valve" },
+            { "slug": "siamese", "ar": "وصلة تغذية الحريق", "en": "Siamese / Breeching Inlet" },
+            { "slug": "gate-check-valves", "ar": "محابس بوابة وعدم رجوع", "en": "Gate & Check Valves" }
+          ]
+        },
+        {
+          "slug": "sprinkler-systems", "ar": "أنظمة الرشاشات", "en": "Sprinkler Systems",
+          "sale_mode": "quote",
+          "children": [
+            { "slug": "sprinkler-heads", "ar": "رشاشات", "en": "Sprinkler Heads" },
+            { "slug": "alarm-valves", "ar": "محابس إنذار", "en": "Alarm Check Valves" },
+            { "slug": "flow-switch", "ar": "مفتاح سريان", "en": "Flow Switch" },
+            { "slug": "pipes-fittings", "ar": "مواسير وتجهيزات", "en": "Pipes & Fittings" }
+          ]
+        },
+        {
+          "slug": "fire-pumps", "ar": "طلمبات الحريق", "en": "Fire Pumps",
+          "sale_mode": "quote",
+          "attributes": ["brand","origin","cert","flow_gpm","head_m","power_hp"],
+          "children": [
+            { "slug": "electric-pump", "ar": "طلمبة كهربائية", "en": "Electric Pump" },
+            { "slug": "diesel-pump", "ar": "طلمبة ديزل", "en": "Diesel Pump" },
+            { "slug": "jockey-pump", "ar": "طلمبة جوكي", "en": "Jockey Pump" },
+            { "slug": "pump-controller", "ar": "لوحة تحكم الطلمبات", "en": "Pump Controller" }
+          ]
+        },
+        {
+          "slug": "suppression-systems", "ar": "أنظمة الإطفاء التلقائي", "en": "Suppression Systems",
+          "sale_mode": "quote",
+          "children": [
+            { "slug": "fm200", "ar": "نظام FM200", "en": "FM200" },
+            { "slug": "novec", "ar": "نظام NOVEC 1230", "en": "NOVEC 1230" },
+            { "slug": "co2-system", "ar": "نظام CO2", "en": "CO2 System" },
+            { "slug": "kitchen-hood", "ar": "نظام إطفاء المطابخ", "en": "Kitchen Hood System" },
+            { "slug": "foam-system", "ar": "نظام الفوم", "en": "Foam System" },
+            { "slug": "water-mist", "ar": "نظام الرذاذ الدقيق", "en": "Water Mist" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "slug": "fire-alarm",
+      "ar": "إنذار الحريق",
+      "en": "Fire Alarm",
+      "icon": "bell",
+      "children": [
+        {
+          "slug": "control-panels", "ar": "لوحات التحكم", "en": "Control Panels",
+          "sale_mode": "quote",
+          "attributes": ["brand","origin","cert","loop_type","zones"],
+          "children": [
+            { "slug": "conventional-panel", "ar": "لوحة تقليدية", "en": "Conventional Panel", "variants_zones": [2,4,8,16,24] },
+            { "slug": "addressable-panel", "ar": "لوحة معنونة", "en": "Addressable Panel" },
+            { "slug": "repeater", "ar": "لوحة تكرار", "en": "Repeater Panel" },
+            { "slug": "battery-psu", "ar": "بطاريات ووحدات تغذية", "en": "Batteries & PSU" }
+          ]
+        },
+        {
+          "slug": "detectors", "ar": "كواشف الحريق", "en": "Detectors",
+          "sale_mode": "hybrid",
+          "attributes": ["brand","origin","cert","loop_type"],
+          "seo_ar": ["كاشف دخان","كاشف حرارة","سعر كاشف الدخان"],
+          "children": [
+            { "slug": "smoke", "ar": "كاشف دخان", "en": "Smoke Detector" },
+            { "slug": "heat", "ar": "كاشف حرارة", "en": "Heat Detector" },
+            { "slug": "multi-sensor", "ar": "كاشف مزدوج", "en": "Multi-Sensor" },
+            { "slug": "beam", "ar": "كاشف شعاعي", "en": "Beam Detector" },
+            { "slug": "flame", "ar": "كاشف لهب", "en": "Flame Detector" },
+            { "slug": "gas", "ar": "كاشف غاز", "en": "Gas Detector" },
+            { "slug": "aspirating", "ar": "كاشف سحب عينات", "en": "Aspirating / VESDA" }
+          ]
+        },
+        {
+          "slug": "alarm-devices", "ar": "أجهزة الإنذار", "en": "Alarm Devices",
+          "sale_mode": "cart",
+          "children": [
+            { "slug": "call-point", "ar": "كاسر زجاج", "en": "Manual Call Point" },
+            { "slug": "sounder", "ar": "جرس / صافرة", "en": "Sounder / Bell" },
+            { "slug": "strobe", "ar": "فلاشر ضوئي", "en": "Strobe" },
+            { "slug": "sounder-strobe", "ar": "صافرة وفلاشر", "en": "Sounder Strobe" },
+            { "slug": "modules", "ar": "موديولات ربط", "en": "Interface Modules" }
+          ]
+        },
+        {
+          "slug": "emergency-egress", "ar": "الإضاءة وإخلاء الطوارئ", "en": "Emergency & Egress",
+          "sale_mode": "cart",
+          "children": [
+            { "slug": "emergency-light", "ar": "كشاف طوارئ", "en": "Emergency Light" },
+            { "slug": "exit-sign", "ar": "لافتة مخرج", "en": "Exit Sign" },
+            { "slug": "fire-door", "ar": "أبواب حريق", "en": "Fire Doors" },
+            { "slug": "fire-blanket", "ar": "بطانية حريق", "en": "Fire Blanket" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "slug": "security-systems",
+      "ar": "أنظمة الأمن والتيار الخفيف",
+      "en": "Security & Low Current",
+      "icon": "shield",
+      "children": [
+        {
+          "slug": "cctv-cameras", "ar": "كاميرات المراقبة", "en": "CCTV Cameras",
+          "sale_mode": "hybrid", "hero": true,
+          "attributes": ["brand","origin","resolution_mp","camera_form","signal_type","ip_rating","warranty_months"],
+          "seo_ar": ["اسعار كاميرات المراقبة","كاميرا مراقبة خارجية","كاميرات مراقبة للمصانع","كاميرا واي فاي"],
+          "children": [
+            { "slug": "dome", "ar": "كاميرا دوم", "en": "Dome" },
+            { "slug": "bullet", "ar": "كاميرا بوليت", "en": "Bullet" },
+            { "slug": "ptz", "ar": "كاميرا متحركة PTZ", "en": "PTZ" },
+            { "slug": "ip-camera", "ar": "كاميرا IP", "en": "IP Camera" },
+            { "slug": "wifi-camera", "ar": "كاميرا واي فاي", "en": "Wi-Fi / Home Camera" },
+            { "slug": "thermal", "ar": "كاميرا حرارية", "en": "Thermal" }
+          ]
+        },
+        {
+          "slug": "recorders-storage", "ar": "أجهزة التسجيل والتخزين", "en": "Recorders & Storage",
+          "sale_mode": "hybrid",
+          "attributes": ["brand","channels","storage_tb","signal_type"],
+          "children": [
+            { "slug": "dvr", "ar": "DVR", "en": "DVR", "variants_channels": [4,8,16,32] },
+            { "slug": "nvr", "ar": "NVR", "en": "NVR", "variants_channels": [4,8,16,32,64] },
+            { "slug": "hdd", "ar": "هارد ديسك مراقبة", "en": "Surveillance HDD" },
+            { "slug": "monitors", "ar": "شاشات عرض", "en": "Monitors" }
+          ]
+        },
+        {
+          "slug": "cctv-accessories", "ar": "ملحقات الكاميرات", "en": "CCTV Accessories",
+          "sale_mode": "cart",
+          "children": [
+            { "slug": "power-supply", "ar": "محولات وباور سبلاي", "en": "Power Supplies" },
+            { "slug": "cables", "ar": "كابلات", "en": "Cables" },
+            { "slug": "connectors", "ar": "وصلات وكونيكتور", "en": "Connectors" },
+            { "slug": "poe-switch", "ar": "سويتش PoE", "en": "PoE Switches" }
+          ]
+        },
+        {
+          "slug": "access-control", "ar": "أنظمة الدخول والحضور", "en": "Access Control & Attendance",
+          "sale_mode": "hybrid",
+          "children": [
+            { "slug": "fingerprint", "ar": "جهاز بصمة", "en": "Fingerprint Terminal" },
+            { "slug": "face-recognition", "ar": "التعرف على الوجه", "en": "Face Recognition" },
+            { "slug": "card-reader", "ar": "قارئ كروت", "en": "Card Reader" },
+            { "slug": "electric-lock", "ar": "كوالين كهربائية", "en": "Electric Locks" },
+            { "slug": "intercom", "ar": "إنتركم وفيديو انتركم", "en": "Intercom" }
+          ]
+        },
+        {
+          "slug": "gates-barriers", "ar": "البوابات والحواجز", "en": "Gates & Barriers",
+          "sale_mode": "quote",
+          "children": [
+            { "slug": "barrier-gate", "ar": "بوابة حاجز سيارات", "en": "Barrier Gate" },
+            { "slug": "turnstile", "ar": "بوابة أفراد", "en": "Turnstile" },
+            { "slug": "automatic-door", "ar": "أبواب أوتوماتيك", "en": "Automatic Doors" },
+            { "slug": "road-blocker", "ar": "مانع مركبات", "en": "Road Blocker" },
+            { "slug": "walkthrough-detector", "ar": "بوابة كشف المعادن", "en": "Walk-Through Detector" },
+            { "slug": "xray-scanner", "ar": "جهاز تفتيش أشعة", "en": "X-Ray Scanner" }
+          ]
+        },
+        {
+          "slug": "intrusion-alarm", "ar": "إنذار السرقة", "en": "Intrusion Alarm",
+          "sale_mode": "hybrid",
+          "children": [
+            { "slug": "alarm-panel", "ar": "لوحة إنذار سرقة", "en": "Alarm Panel" },
+            { "slug": "pir", "ar": "حساس حركة", "en": "PIR / Motion Sensor" },
+            { "slug": "magnetic-contact", "ar": "كونتاكت مغناطيسي", "en": "Magnetic Contact" },
+            { "slug": "panic-button", "ar": "زر استغاثة", "en": "Panic Button" }
+          ]
+        },
+        {
+          "slug": "pa-systems", "ar": "أنظمة الصوت والنداء", "en": "PA & Voice Evacuation",
+          "sale_mode": "quote",
+          "children": [
+            { "slug": "amplifier", "ar": "أمبليفاير", "en": "Amplifiers" },
+            { "slug": "speakers", "ar": "سماعات", "en": "Speakers" },
+            { "slug": "voice-evac", "ar": "نظام إخلاء صوتي", "en": "Voice Evacuation" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "slug": "industrial-safety",
+      "ar": "الأمن الصناعي ومهمات الوقاية",
+      "en": "Industrial Safety & PPE",
+      "icon": "hard-hat",
+      "children": [
+        {
+          "slug": "head-face", "ar": "وقاية الرأس والوجه", "en": "Head & Face Protection",
+          "sale_mode": "cart", "hero": true,
+          "attributes": ["brand","origin","cert","color","size_apparel"],
+          "seo_ar": ["خوذة أمن صناعي","نظارة سلامة","كمامة"],
+          "children": [
+            { "slug": "helmets", "ar": "خوذ", "en": "Safety Helmets" },
+            { "slug": "goggles", "ar": "نظارات واقية", "en": "Goggles & Glasses" },
+            { "slug": "face-shield", "ar": "درع الوجه", "en": "Face Shields" },
+            { "slug": "welding-mask", "ar": "قناع لحام", "en": "Welding Masks" },
+            { "slug": "ear-protection", "ar": "واقي أذن", "en": "Ear Protection" },
+            { "slug": "respirators", "ar": "كمامات وأقنعة تنفس", "en": "Masks & Respirators" }
+          ]
+        },
+        {
+          "slug": "hand-body", "ar": "وقاية اليد والجسم", "en": "Hand & Body Protection",
+          "sale_mode": "cart",
+          "attributes": ["brand","origin","cert","size_apparel","material","color"],
+          "children": [
+            { "slug": "gloves", "ar": "قفازات", "en": "Gloves" },
+            { "slug": "coveralls", "ar": "أفرولات وبدل عمل", "en": "Coveralls & Workwear" },
+            { "slug": "hi-vis", "ar": "سترات عاكسة", "en": "Hi-Vis Vests" },
+            { "slug": "fire-suit", "ar": "بدلة إطفاء / حرارة", "en": "Fire & Heat Suits" },
+            { "slug": "chemical-suit", "ar": "بدلة كيماويات", "en": "Chemical Suits" },
+            { "slug": "rainwear", "ar": "ملابس مطر", "en": "Rainwear" }
+          ]
+        },
+        {
+          "slug": "footwear", "ar": "أحذية السلامة", "en": "Safety Footwear",
+          "sale_mode": "cart",
+          "attributes": ["brand","origin","cert","shoe_size_eu","material"],
+          "seo_ar": ["حذاء أمن صناعي","بوت سيفتي"],
+          "children": [
+            { "slug": "safety-shoes", "ar": "أحذية بمقدمة حديد", "en": "Steel-Toe Shoes" },
+            { "slug": "safety-boots", "ar": "بوت طويل", "en": "Boots" },
+            { "slug": "electrical-shoes", "ar": "أحذية عازلة للكهرباء", "en": "Electrical Hazard" }
+          ]
+        },
+        {
+          "slug": "height-safety", "ar": "السلامة على الارتفاعات", "en": "Height Safety",
+          "sale_mode": "hybrid",
+          "children": [
+            { "slug": "harness", "ar": "حزام أمان", "en": "Full Body Harness" },
+            { "slug": "lanyard", "ar": "حبال وربطات", "en": "Lanyards" },
+            { "slug": "lifeline", "ar": "خطوط حياة", "en": "Lifelines" },
+            { "slug": "ladders", "ar": "سلالم", "en": "Ladders" }
+          ]
+        },
+        {
+          "slug": "road-traffic", "ar": "سلامة الطرق والمرور", "en": "Road & Traffic Safety",
+          "sale_mode": "cart",
+          "children": [
+            { "slug": "cones", "ar": "أكوان مرورية", "en": "Traffic Cones" },
+            { "slug": "wheel-stopper", "ar": "مصدات عجل", "en": "Wheel Stoppers" },
+            { "slug": "speed-bump", "ar": "مطبات صناعية", "en": "Speed Bumps" },
+            { "slug": "corner-guard", "ar": "حماية أركان", "en": "Corner Guards" },
+            { "slug": "convex-mirror", "ar": "مرايا محدبة", "en": "Convex Mirrors" },
+            { "slug": "barriers-chains", "ar": "حواجز وسلاسل", "en": "Barriers & Chains" },
+            { "slug": "reflective-tape", "ar": "شرائط عاكسة", "en": "Reflective Tape" }
+          ]
+        },
+        {
+          "slug": "signage", "ar": "لوحات إرشادية وتحذيرية", "en": "Safety Signage",
+          "sale_mode": "cart",
+          "children": [
+            { "slug": "fire-signs", "ar": "لوحات الحريق", "en": "Fire Signs" },
+            { "slug": "warning-signs", "ar": "لوحات تحذير", "en": "Warning Signs" },
+            { "slug": "photoluminescent", "ar": "لوحات مضيئة", "en": "Photoluminescent" },
+            { "slug": "custom-signs", "ar": "لوحات حسب الطلب", "en": "Custom Signage" }
+          ]
+        },
+        {
+          "slug": "first-aid", "ar": "الإسعافات الأولية", "en": "First Aid",
+          "sale_mode": "cart",
+          "children": [
+            { "slug": "first-aid-kit", "ar": "حقيبة إسعافات", "en": "First Aid Kits" },
+            { "slug": "first-aid-cabinet", "ar": "دولاب إسعافات", "en": "First Aid Cabinets" },
+            { "slug": "eye-wash", "ar": "غسيل عيون ودش طوارئ", "en": "Eye Wash & Safety Shower" },
+            { "slug": "stretcher", "ar": "نقالات", "en": "Stretchers" },
+            { "slug": "spill-kit", "ar": "أطقم امتصاص الانسكاب", "en": "Spill Kits" }
+          ]
+        }
+      ]
+    }
+  ],
+
+  "services": [
+    { "slug": "extinguisher-refill", "ar": "إعادة تعبئة واختبار الطفايات", "en": "Extinguisher Refill & Testing", "model": "booking", "recurring_months": 12, "priority": "highest",
+      "seo_ar": ["اعادة تعبئة طفايات الحريق","صيانة طفايات حريق القاهرة","اختبار طفاية حريق"] },
+    { "slug": "annual-inspection", "ar": "الفحص الدوري وشهادة الدفاع المدني", "en": "Annual Inspection & Civil Defense Certificate", "model": "booking", "recurring_months": 12, "priority": "highest" },
+    { "slug": "maintenance-contract", "ar": "عقود صيانة سنوية", "en": "Annual Maintenance Contracts", "model": "tiered_quote", "tiers": ["أساسي","شامل","24/7"] },
+    { "slug": "installation", "ar": "التوريد والتركيب", "en": "Supply & Installation", "model": "site_survey" },
+    { "slug": "design-consulting", "ar": "التصميم والاستشارات الهندسية", "en": "Design & Consulting", "model": "rfq" },
+    { "slug": "training", "ar": "تدريب فرق الطوارئ", "en": "Emergency Team Training", "model": "booking" }
+  ],
+
+  "solution_bundles": [
+    { "slug": "restaurant", "ar": "حزمة سلامة المطاعم والكافيهات", "includes": ["wet-chemical","kitchen-hood","fire-blanket","co2","smoke","exit-sign","first-aid-kit"] },
+    { "slug": "warehouse", "ar": "حزمة المخازن والمستودعات", "includes": ["dry-powder","hose-reel","addressable-panel","smoke","sprinkler-heads","hi-vis","signage"] },
+    { "slug": "factory", "ar": "حزمة المصانع", "includes": ["trolley","fire-pumps","addressable-panel","gas","helmets","safety-shoes","eye-wash","cctv-cameras"] },
+    { "slug": "school", "ar": "حزمة المدارس والحضانات", "includes": ["dry-powder","conventional-panel","call-point","sounder","exit-sign","first-aid-cabinet"] },
+    { "slug": "clinic", "ar": "حزمة العيادات والمستشفيات", "includes": ["co2","clean-agent","smoke","emergency-light","first-aid-kit"] },
+    { "slug": "office", "ar": "حزمة المكاتب والإدارات", "includes": ["co2","dry-powder","smoke","exit-sign","cctv-cameras","access-control"] },
+    { "slug": "datacenter", "ar": "حزمة غرف السيرفرات", "includes": ["fm200","novec","aspirating","access-control","thermal"] },
+    { "slug": "residential", "ar": "حزمة المنازل والعقارات", "includes": ["dry-powder","fire-blanket","smoke","wifi-camera","intercom"] }
+  ]
+}

@@ -69,7 +69,13 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: isPostgres
-    ? postgresAdapter({ pool: { connectionString: DATABASE_URI } })
+    ? postgresAdapter({
+        pool: { connectionString: DATABASE_URI },
+        // Payload never creates tables in production. The build-time seed
+        // (scripts/seed-on-vercel.mjs) sets this so the schema is pushed once,
+        // during the build; serverless cold starts leave it off.
+        push: process.env.PAYLOAD_DB_PUSH === 'true',
+      })
     : sqliteAdapter({ client: { url: DATABASE_URI } }),
   plugins: storagePlugins,
   sharp,

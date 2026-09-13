@@ -1,5 +1,6 @@
 /**
- * Seeds the category tree and services from ../../catalog/taxonomy.json.
+ * Seeds the category tree and services from ./taxonomy.json (a copy of
+ * ../../catalog/taxonomy.json, kept in-repo so the seed can run on Vercel).
  * Idempotent — re-running updates existing records by slug.
  *
  *   npm run seed
@@ -12,7 +13,7 @@ import { getPayload } from 'payload'
 import config from '../payload.config.js'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
-const TAXONOMY = path.resolve(dirname, '../../../catalog/taxonomy.json')
+const TAXONOMY = path.resolve(dirname, 'taxonomy.json')
 
 type Node = {
   slug: string

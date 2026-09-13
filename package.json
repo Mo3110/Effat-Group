@@ -15,7 +15,8 @@
     "seed": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" tsx src/seed/run.ts",
     "seed:products": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" tsx src/seed/products.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prebuild": "node scripts/seed-on-vercel.mjs"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.88.0",

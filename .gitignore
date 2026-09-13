@@ -57,3 +57,8 @@ node_modules/
 
 # NOTE: ./media (seeded product images) is committed on purpose so a fresh
 # deploy has pictures. Runtime uploads on Vercel go to Blob, not here.
+.env*
+
+# pulled from Vercel — never commit
+.env.vercel
+.env*.local
