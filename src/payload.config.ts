@@ -18,7 +18,10 @@ import { Quotes } from './collections/Quotes'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const DATABASE_URI = process.env.DATABASE_URI || 'file:./effat.db'
+// DATABASE_URI is ours; DATABASE_URL is what the Vercel ⇄ Neon integration
+// injects (the suffix is fixed by Vercel). Accept both so no secret has to be
+// copied between variables by hand.
+const DATABASE_URI = process.env.DATABASE_URI || process.env.DATABASE_URL || 'file:./effat.db'
 
 /**
  * Local development uses a SQLite file; a hosted deployment uses Postgres.
